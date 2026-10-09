@@ -32,6 +32,12 @@ export const metadata: Metadata = {
   authors: [{ name: 'BY Devs', url: 'https://bydevs.com' }],
   creator: 'BY Devs',
   publisher: 'BY Devs',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
+  manifest: '/site.webmanifest',
   alternates: {
     canonical: 'https://bydevs.com',
   },
@@ -69,6 +75,7 @@ const jsonLd = {
       '@id': 'https://bydevs.com/#organization',
       name: 'BY Devs',
       url: 'https://bydevs.com',
+      logo: 'https://bydevs.com/favicon.svg',
       email: 'hello.bydevs@gmail.com',
       sameAs: [
         'https://www.instagram.com/hello.bydevs/',
@@ -93,6 +100,44 @@ const jsonLd = {
       provider: {
         '@id': 'https://bydevs.com/#organization',
       },
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: 'Software Engineering Services',
+        itemListElement: [
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Custom Web Applications',
+              description: 'Purpose-built web applications designed around exact workflows and business requirements.'
+            }
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Cloud Business Systems',
+              description: 'Secure cloud-based systems for operations, data, inventory, sales, and payments.'
+            }
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'E-Commerce Platforms',
+              description: 'Fast, scalable online stores with custom functionality and payment integrations.'
+            }
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'AI-Powered Solutions',
+              description: 'Intelligent automation, smart business assistants, and automated data analysis.'
+            }
+          }
+        ]
+      }
     },
   ],
 };

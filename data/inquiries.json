@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "id": "inq_1791549872146",
+    "created_at": "2026-10-09T12:44:32.146Z",
+    "updated_at": "2026-10-09T12:44:32.148Z",
+    "name": "Bilal Yasir",
+    "company": "BY Devs Studio",
+    "email": "bilal@bydevs.com",
+    "country": "Pakistan",
+    "country_code": "+92",
+    "phone": "3001234567",
+    "full_phone": "+92 3001234567",
+    "service": "Custom web application",
+    "budget": ",000 – ,000",
+    "message": "Testing inquiry submission pipeline to ensure admin dashboard displays inquiries properly.",
+    "status": "new",
+    "notes": ""
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "name": "BY Devs - Web, Cloud & Software Solutions",
+  "short_name": "BY Devs",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#0b1726",
+  "background_color": "#070d18",
+  "display": "standalone",
+  "start_url": "/"
+}

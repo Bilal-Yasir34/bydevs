@@ -79,6 +79,25 @@ export default function AdminPage() {
     checkSession();
   }, []);
 
+  // Set up periodic auto-refresh and window focus sync when authenticated
+  useEffect(() => {
+    if (!authenticated) return;
+
+    const interval = setInterval(() => {
+      loadInquiries(true); // silent refresh
+    }, 8000);
+
+    const handleFocus = () => {
+      loadInquiries(true);
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [authenticated]);
+
   const checkSession = async () => {
     try {
       const res = await fetch('/api/admin/me');
@@ -100,8 +119,8 @@ export default function AdminPage() {
     }
   };
 
-  const loadInquiries = async () => {
-    setFetching(true);
+  const loadInquiries = async (silent = false) => {
+    if (!silent) setFetching(true);
     try {
       const res = await fetch('/api/admin/inquiries');
       if (res.status === 401) {
@@ -118,7 +137,7 @@ export default function AdminPage() {
     } catch (err) {
       console.error('Failed to load inquiries:', err);
     } finally {
-      setFetching(false);
+      if (!silent) setFetching(false);
     }
   };
 
@@ -456,7 +475,7 @@ export default function AdminPage() {
             )}
 
             <button
-              onClick={loadInquiries}
+              onClick={() => loadInquiries()}
               disabled={fetching}
               className="admin-btn"
               title="Refresh Inquiries"
