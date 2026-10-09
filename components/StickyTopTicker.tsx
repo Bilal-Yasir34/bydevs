@@ -16,11 +16,6 @@ const TICKER_ITEMS = [
 export function StickyTopTicker() {
   return (
     <aside className="sticky-top-ticker" aria-label="Announcement ticker">
-      <div className="ticker-badge-lead">
-        <span className="ticker-pulse-dot" aria-hidden="true" />
-        <span className="ticker-lead-text">LIVE STATUS</span>
-      </div>
-
       <div className="ticker-track-wrapper">
         <div className="ticker-marquee-content" tabIndex={0} aria-label="BY Devs live announcements">
           {/* First set */}
@@ -43,11 +38,6 @@ export function StickyTopTicker() {
           ))}
         </div>
       </div>
-
-      <a href="#contact" className="ticker-cta-link">
-        <span>Start Project</span>
-        <ArrowRight size={13} />
-      </a>
     </aside>
   );
 }

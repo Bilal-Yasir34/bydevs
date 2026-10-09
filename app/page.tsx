@@ -24,6 +24,7 @@ import {
   Layers3,
   Linkedin,
   Loader2,
+  Mail,
   Menu,
   Network,
   PanelTop,
@@ -699,35 +700,124 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="site-footer">
+        <div className="footer-glow" />
         <div className="container footer-top">
-          <div>
+          <div className="footer-brand-col">
             <Logo light />
-            <p>Custom digital systems<br />built around your business.</p>
+            <p className="footer-brand-tagline">
+              Custom digital systems, business software and cloud architectures built around the way your enterprise actually works.
+            </p>
+            <div className="footer-status-badge">
+              <span className="footer-pulse-dot" />
+              <span>Available for new projects</span>
+            </div>
+            <a
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=hello.bydevs@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-email-badge"
+            >
+              <Mail size={13} />
+              <span>hello.bydevs@gmail.com</span>
+              <ArrowUpRight size={13} />
+            </a>
           </div>
-          <div className="footer-nav">
-            <span>Explore</span>
-            <a href="#services">Services</a>
-            <a href="#architecture-3d">3D Matrix</a>
-            <a href="#work">Work</a>
-            <a href="#testimonials">Testimonials</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
+
+          <div className="footer-nav-col">
+            <span className="footer-col-title">Navigation</span>
+            <div className="footer-links-grid">
+              <a href="#services">Services</a>
+              <a href="#architecture-3d">3D Matrix</a>
+              <a href="#work">Selected Work</a>
+              <a href="#process">Process</a>
+              <a href="#testimonials">Testimonials</a>
+              <a href="#about">About Studio</a>
+              <a href="#contact">Start Project</a>
+              <a href="/admin">Admin Portal</a>
+            </div>
           </div>
-          <div className="footer-nav">
-            <span>Connect</span>
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=hello.bydevs@gmail.com" target="_blank" rel="noopener noreferrer">Email us</a>
+
+          <div className="footer-connect-col">
+            <span className="footer-col-title">Connect & Socials</span>
+            <p className="footer-connect-desc">Direct communication channels & engineering network</p>
             <div className="footer-socials">
-              <CircleButtons variant="mail" mode="dark" hue={0} saturation={1.00} brightness={1.00} href="https://mail.google.com/mail/?view=cm&fs=1&to=hello.bydevs@gmail.com" target="_blank" rel="noopener noreferrer" ariaLabel="Compose email to hello.bydevs@gmail.com on Gmail" />
-              <CircleButtons variant="mail" mode="dark" hue={0} saturation={1.00} brightness={1.00} href="https://www.facebook.com/profile.php?id=61595093072452" target="_blank" rel="noopener noreferrer" ariaLabel="Facebook"><Facebook size={18} /></CircleButtons>
-              <CircleButtons variant="mail" mode="dark" hue={0} saturation={1.00} brightness={1.00} href="https://www.instagram.com/hello.bydevs/" target="_blank" rel="noopener noreferrer" ariaLabel="Instagram"><Instagram size={18} /></CircleButtons>
-              <CircleButtons variant="mail" mode="dark" hue={0} saturation={1.00} brightness={1.00} href="https://www.linkedin.com/in/bilal-yasir-3b58b5325/" target="_blank" rel="noopener noreferrer" ariaLabel="LinkedIn"><Linkedin size={18} /></CircleButtons>
-              <CircleButtons variant="mail" mode="dark" hue={0} saturation={1.00} brightness={1.00} href="https://github.com/Bilal-Yasir34" target="_blank" rel="noopener noreferrer" ariaLabel="GitHub"><Github size={18} /></CircleButtons>
+              <CircleButtons
+                variant="mail"
+                mode="dark"
+                hue={0}
+                saturation={1.00}
+                brightness={1.00}
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=hello.bydevs@gmail.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                ariaLabel="Compose email to hello.bydevs@gmail.com on Gmail"
+              />
+              <CircleButtons
+                variant="mail"
+                mode="dark"
+                hue={0}
+                saturation={1.00}
+                brightness={1.00}
+                href="https://www.facebook.com/profile.php?id=61595093072452"
+                target="_blank"
+                rel="noopener noreferrer"
+                ariaLabel="Facebook"
+              >
+                <Facebook size={18} />
+              </CircleButtons>
+              <CircleButtons
+                variant="mail"
+                mode="dark"
+                hue={0}
+                saturation={1.00}
+                brightness={1.00}
+                href="https://www.instagram.com/hello.bydevs/"
+                target="_blank"
+                rel="noopener noreferrer"
+                ariaLabel="Instagram"
+              >
+                <Instagram size={18} />
+              </CircleButtons>
+              <CircleButtons
+                variant="mail"
+                mode="dark"
+                hue={0}
+                saturation={1.00}
+                brightness={1.00}
+                href="https://www.linkedin.com/in/bilal-yasir-3b58b5325/"
+                target="_blank"
+                rel="noopener noreferrer"
+                ariaLabel="LinkedIn"
+              >
+                <Linkedin size={18} />
+              </CircleButtons>
+              <CircleButtons
+                variant="mail"
+                mode="dark"
+                hue={0}
+                saturation={1.00}
+                brightness={1.00}
+                href="https://github.com/Bilal-Yasir34"
+                target="_blank"
+                rel="noopener noreferrer"
+                ariaLabel="GitHub"
+              >
+                <Github size={18} />
+              </CircleButtons>
             </div>
           </div>
         </div>
+
         <div className="container footer-bottom">
-          <span>© 2026 BY Devs. All rights reserved.</span>
-          <span>Web <i>•</i> Cloud <i>•</i> Software</span>
+          <div className="footer-copy-wrap">
+            <span>© 2026 BY Devs. All rights reserved.</span>
+            <span className="footer-sep">•</span>
+            <span className="footer-built-tag">Enterprise Software Studio</span>
+          </div>
+          <div className="footer-bottom-links">
+            <a href="#top" className="footer-back-top">Back to top ↑</a>
+            <span className="footer-tag-chips">Web <i>•</i> Cloud <i>•</i> Software</span>
+          </div>
         </div>
       </footer>
     </main>

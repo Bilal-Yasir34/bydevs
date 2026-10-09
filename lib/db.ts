@@ -160,17 +160,26 @@ export async function getInquiries(): Promise<{ inquiries: Inquiry[]; source: 's
         .order('created_at', { ascending: false });
 
       if (!error && Array.isArray(data)) {
-        // Seamlessly merge Supabase + Local records so no inquiries are ever dropped
+        // Smart merge: Use the newest record (by updated_at/created_at) so local status updates are never lost
         const map = new Map<string, Inquiry>();
 
-        // Add local records first
-        for (const item of localList) {
-          map.set(item.id, item);
+        // 1. Load Supabase records
+        for (const sbItem of data as Inquiry[]) {
+          map.set(sbItem.id, sbItem);
         }
 
-        // Add or overwrite with Supabase records
-        for (const item of data as Inquiry[]) {
-          map.set(item.id, item);
+        // 2. Merge Local records (if local is newer or not in Supabase, local wins)
+        for (const localItem of localList) {
+          const sbItem = map.get(localItem.id);
+          if (!sbItem) {
+            map.set(localItem.id, localItem);
+          } else {
+            const localUpdated = new Date(localItem.updated_at || localItem.created_at).getTime();
+            const sbUpdated = new Date(sbItem.updated_at || sbItem.created_at).getTime();
+            if (localUpdated >= sbUpdated) {
+              map.set(localItem.id, localItem);
+            }
+          }
         }
 
         const merged = Array.from(map.values()).sort(
@@ -196,6 +205,9 @@ export async function getInquiries(): Promise<{ inquiries: Inquiry[]; source: 's
 }
 
 export async function getInquiryById(id: string): Promise<Inquiry | null> {
+  const list = ensureLocalStore();
+  const localItem = list.find(item => item.id === id);
+
   const sb = getSupabaseClient();
   if (sb) {
     try {
@@ -206,21 +218,24 @@ export async function getInquiryById(id: string): Promise<Inquiry | null> {
         .single();
 
       if (!error && data) {
-        return data as Inquiry;
+        const sbItem = data as Inquiry;
+        if (!localItem) return sbItem;
+        const localUpdated = new Date(localItem.updated_at || localItem.created_at).getTime();
+        const sbUpdated = new Date(sbItem.updated_at || sbItem.created_at).getTime();
+        return localUpdated >= sbUpdated ? localItem : sbItem;
       }
     } catch (err) {
       console.warn('Supabase getById check:', err);
     }
   }
 
-  const list = ensureLocalStore();
-  return list.find(item => item.id === id) || null;
+  return localItem || null;
 }
 
 export async function updateInquiry(id: string, updates: UpdateInquiryInput): Promise<Inquiry | null> {
   const now = new Date().toISOString();
 
-  // 1. Update local storage
+  // 1. Check local storage
   const list = ensureLocalStore();
   const index = list.findIndex(item => item.id === id);
   let updated: Inquiry | null = null;
@@ -237,7 +252,7 @@ export async function updateInquiry(id: string, updates: UpdateInquiryInput): Pr
     writeLocalStore(list);
   }
 
-  // 2. Sync to Supabase
+  // 2. Dual-write / sync to Supabase
   const sb = getSupabaseClient();
   if (sb) {
     try {
@@ -255,10 +270,39 @@ export async function updateInquiry(id: string, updates: UpdateInquiryInput): Pr
         .single();
 
       if (!error && data) {
-        return data as Inquiry;
+        const sbInquiry = data as Inquiry;
+        if (index !== -1) {
+          list[index] = sbInquiry;
+        } else {
+          list.unshift(sbInquiry);
+        }
+        writeLocalStore(list);
+        return sbInquiry;
+      }
+      if (error) {
+        console.warn('Supabase update note (status updated locally):', error.message);
       }
     } catch (err) {
-      console.warn('Supabase update check:', err);
+      console.warn('Supabase update failed, status saved locally:', err);
+    }
+  }
+
+  // If item wasn't in local list previously, try to fetch from Supabase to form updated object
+  if (!updated && sb) {
+    try {
+      const { data: existing } = await sb.from('inquiries').select('*').eq('id', id).single();
+      if (existing) {
+        updated = {
+          ...(existing as Inquiry),
+          status: updates.status !== undefined ? updates.status : (existing as Inquiry).status,
+          notes: updates.notes !== undefined ? updates.notes : (existing as Inquiry).notes,
+          updated_at: now,
+        };
+        list.unshift(updated);
+        writeLocalStore(list);
+      }
+    } catch (e) {
+      console.warn('Fallback fetch during update:', e);
     }
   }
 

@@ -179,25 +179,59 @@ export default function AdminPage() {
     }
   };
 
-  // 4. Update Inquiry Status
+  const computeStats = (list: Inquiry[]): InquiryStats => ({
+    total: list.length,
+    new: list.filter(i => i.status === 'new').length,
+    called: list.filter(i => i.status === 'called').length,
+    in_progress: list.filter(i => i.status === 'in_progress').length,
+    completed: list.filter(i => i.status === 'completed').length,
+    cancelled: list.filter(i => i.status === 'cancelled').length,
+  });
+
+  // 4. Update Inquiry Status with Immediate Optimistic UI Feedback
   const handleStatusUpdate = async (id: string, newStatus: InquiryStatus) => {
+    // Optimistic UI update
+    const previousInquiries = [...inquiries];
+    const previousSelected = selectedInquiry;
+
+    const updatedList = inquiries.map(item =>
+      item.id === id ? { ...item, status: newStatus, updated_at: new Date().toISOString() } : item
+    );
+    setInquiries(updatedList);
+    setStats(computeStats(updatedList));
+
+    if (selectedInquiry?.id === id) {
+      setSelectedInquiry({ ...selectedInquiry, status: newStatus, updated_at: new Date().toISOString() });
+    }
+
     try {
       const res = await fetch(`/api/admin/inquiries/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
       });
+
       if (res.ok) {
         const { inquiry } = await res.json();
-        setInquiries(prev => prev.map(item => (item.id === id ? inquiry : item)));
-        if (selectedInquiry?.id === id) {
-          setSelectedInquiry(inquiry);
+        if (inquiry) {
+          setInquiries(prev => {
+            const next = prev.map(item => (item.id === id ? inquiry : item));
+            setStats(computeStats(next));
+            return next;
+          });
+          if (selectedInquiry?.id === id) {
+            setSelectedInquiry(inquiry);
+          }
         }
-        // Update stats
-        await loadInquiries();
+      } else {
+        console.error('Failed to persist status update to backend');
       }
     } catch (err) {
       console.error('Failed to update status:', err);
+      // Revert if severe network failure occurs
+      setInquiries(previousInquiries);
+      setStats(computeStats(previousInquiries));
+      setSelectedInquiry(previousSelected);
     }
   };
 
@@ -215,8 +249,10 @@ export default function AdminPage() {
       });
       if (res.ok) {
         const { inquiry } = await res.json();
-        setInquiries(prev => prev.map(item => (item.id === inquiry.id ? inquiry : item)));
-        setSelectedInquiry(inquiry);
+        if (inquiry) {
+          setInquiries(prev => prev.map(item => (item.id === inquiry.id ? inquiry : item)));
+          setSelectedInquiry(inquiry);
+        }
         setNotesSaved(true);
         setTimeout(() => setNotesSaved(false), 3000);
       }
@@ -233,18 +269,26 @@ export default function AdminPage() {
       return;
     }
 
+    const previousInquiries = [...inquiries];
+    const filtered = inquiries.filter(item => item.id !== id);
+    setInquiries(filtered);
+    setStats(computeStats(filtered));
+    if (selectedInquiry?.id === id) {
+      setSelectedInquiry(null);
+    }
+
     setDeletingId(id);
     try {
       const res = await fetch(`/api/admin/inquiries/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        setInquiries(prev => prev.filter(item => item.id !== id));
-        if (selectedInquiry?.id === id) {
-          setSelectedInquiry(null);
-        }
-        await loadInquiries();
+      if (!res.ok) {
+        // revert on failure
+        setInquiries(previousInquiries);
+        setStats(computeStats(previousInquiries));
       }
     } catch (err) {
       console.error('Failed to delete inquiry:', err);
+      setInquiries(previousInquiries);
+      setStats(computeStats(previousInquiries));
     } finally {
       setDeletingId(null);
     }
